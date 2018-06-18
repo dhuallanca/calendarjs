@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GlobalConst } from './global-const';
-import { ICalendar, ICalendarDays } from './calendar.model';
+import { ICalendar, ICalendarDays, ICalendarWeeks } from './calendar.model';
 import { CIRCULAR } from '@angular/core/src/render3/instructions';
 
 @Component({
@@ -13,7 +13,7 @@ export class AppComponent implements OnInit {
   title = 'Calendar web';
   listOfMonths = GlobalConst.months;
   listOfDays = GlobalConst.days;
-  startDate: Date = new Date(2018, 6, 17);
+  startDate: Date = new Date(2018, 5, 17);
   numberOfDays: number;
   countryCode: string;
   calendarList: ICalendar[] = [];
@@ -22,6 +22,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.numberOfDays = 15;
     this.createCalendar();
   }
 
@@ -29,36 +30,59 @@ export class AppComponent implements OnInit {
 const calendar = <ICalendar>{};
     const monthCalendar = this.getInitialMonth(this.startDate);
     calendar.month = monthCalendar;
+    calendar.listOfWeeks = [];
+    console.log('start date', this.startDate);
+    console.log('start month', monthCalendar);
+    const startDayOfWeek = this.getInitialDay(this.startDate);
+    console.log('start day of week', startDayOfWeek);
+    const lastDayOfMonth = new Date(this.startDate.getUTCFullYear(), monthCalendar + 1, 0).getDate();
+    console.log('last day of month:', lastDayOfMonth);
+    let initialDate = this.startDate.getDate();
+    console.log('initial date', initialDate);
+    let counterOfDays = 0;
 
-    console.log(monthCalendar);
-    let startDay = this.getInitialDay(this.startDate);
-    console.log(startDay);
-    const lastDay = new Date(this.startDate.getUTCFullYear(), monthCalendar + 1, 0).getDate();
-    console.log(lastDay);
+    while (counterOfDays <= this.numberOfDays) {
+console.log(counterOfDays);
+         for (let f = 0; f < 6; f++) {
+          const daysOfWeek: ICalendarWeeks = <ICalendarWeeks>{};
+          const listDays: ICalendarDays[] = [];
+          for (let d = 0; d < 7; d++) {
+            // todo
+            console.log('test', d);
+            const day: ICalendarDays = <ICalendarDays>{};
 
-    while (this.startDate.getDate() <= this.startDate.getDate() + this.numberOfDays) {
+            if (d >= startDayOfWeek || f > 0) {
+              // hasValue
+              day.day = initialDate;
+              day.enable = true;
+              counterOfDays ++;
+              initialDate ++;
+            } else {
+              day.day = 0;
+              day.enable = false;
+            }
+            listDays.push(day);
+            
+            if (startDayOfWeek === lastDayOfMonth) {
+    
+            }
+          }
+
+          daysOfWeek.week = 1;
+          daysOfWeek.daysOfWeek = listDays;
+          console.log('days per week', daysOfWeek);
+          calendar.listOfWeeks.push(daysOfWeek);
+          console.log('weeks per month', calendar);
+          if (counterOfDays > this.numberOfDays) {
+            // leave week
+            console.log('break weeks');
+            break;
+          }
+         }
+
 
     }
-    // max rows for month
-    for (let f = 0; f < 6; f++) {
-      // days of a week
-      const listDays: ICalendarDays[] = [];
-      for (let d = 0; d < 7; d++) {
-        // todo
-        const days: ICalendarDays = {};
-        days.day = 0;
-        days.enable = false;
-        if (d >= startDay) {
-          // hasValue
-          days.day = startDay;
-        }
-        listDays.push(days);
-        startDay += 1;
-        if (startDay === lastDay) {
 
-        }
-      }
-    }
   }
 
   getInitialDate() {
