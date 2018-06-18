@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { GlobalConst } from './global-const';
 import { ICalendar, ICalendarDays, ICalendarWeeks } from './calendar.model';
 import { CIRCULAR } from '@angular/core/src/render3/instructions';
@@ -13,6 +14,7 @@ export class AppComponent implements OnInit {
   title = 'Calendar web';
   listOfMonths = GlobalConst.months;
   listOfDays = GlobalConst.days;
+  date: string;
   startDate: Date = new Date(2018, 5, 18);
   numberOfDays: number = 15;
   countryCode: string;
@@ -27,6 +29,15 @@ export class AppComponent implements OnInit {
   }
 
   createCalendar() {
+    this.counterOfDays = 0
+    this.calendarList = [];
+    if (this.date && this.date.split('/').length>1) {
+      const inputYear = Number(this.date.split('/')[0]);
+      const inputMonth = Number(this.date.split('/')[1]);
+      const inputDay = Number(this.date.split('/')[2]);
+      this.startDate = new Date(inputYear, inputMonth -1, inputDay);
+    }
+
     const monthCalendar = this.getInitialMonth(this.startDate);
 
     while (this.counterOfDays <= this.numberOfDays) {
