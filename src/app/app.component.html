@@ -7,12 +7,25 @@
 </div>
 
 <section>
-    <table>
-        <ng-container *ngFor="let month of listOfMonths">
-            <th>{{month}}</th>
-        </ng-container>
-        <ng-container *ngFor="let item of collection">
+    <ng-container *ngFor="let month of calendarList">
+        <table>
+            <th colspan="7">{{listOfMonths[month.month]}}</th>
+            <tr>
+                <td *ngFor="let days of listOfDays">
+                    {{days}}
+                </td>
+            </tr>
+            <tr *ngFor="let week of month.listOfWeeks">
+                <ng-container *ngFor="let day of week.daysOfWeek">
+                    <td [ngClass]="{'enable': day.enable, 'disabled': !day.enable}">
+                        <span>{{day.day > 0? day.day: ''}}</span>
+                    </td>
+                </ng-container>
 
-        </ng-container>
+            </tr>
+        </table>
+    </ng-container>
+    <table>
+
     </table>
 </section>

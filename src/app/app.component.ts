@@ -13,75 +13,28 @@ export class AppComponent implements OnInit {
   title = 'Calendar web';
   listOfMonths = GlobalConst.months;
   listOfDays = GlobalConst.days;
-  startDate: Date = new Date(2018, 5, 17);
-  numberOfDays: number;
+  startDate: Date = new Date(2018, 5, 18);
+  numberOfDays: number = 15;
   countryCode: string;
   calendarList: ICalendar[] = [];
+  counterOfDays = 0
   constructor() {
 
   }
 
   ngOnInit(): void {
-    this.numberOfDays = 15;
     this.createCalendar();
   }
 
   createCalendar() {
-const calendar = <ICalendar>{};
     const monthCalendar = this.getInitialMonth(this.startDate);
-    calendar.month = monthCalendar;
-    calendar.listOfWeeks = [];
-    console.log('start date', this.startDate);
-    console.log('start month', monthCalendar);
-    const startDayOfWeek = this.getInitialDay(this.startDate);
-    console.log('start day of week', startDayOfWeek);
-    const lastDayOfMonth = new Date(this.startDate.getUTCFullYear(), monthCalendar + 1, 0).getDate();
-    console.log('last day of month:', lastDayOfMonth);
-    let initialDate = this.startDate.getDate();
-    console.log('initial date', initialDate);
-    let counterOfDays = 0;
 
-    while (counterOfDays <= this.numberOfDays) {
-console.log(counterOfDays);
-         for (let f = 0; f < 6; f++) {
-          const daysOfWeek: ICalendarWeeks = <ICalendarWeeks>{};
-          const listDays: ICalendarDays[] = [];
-          for (let d = 0; d < 7; d++) {
-            // todo
-            console.log('test', d);
-            const day: ICalendarDays = <ICalendarDays>{};
-
-            if (d >= startDayOfWeek || f > 0) {
-              // hasValue
-              day.day = initialDate;
-              day.enable = true;
-              counterOfDays ++;
-              initialDate ++;
-            } else {
-              day.day = 0;
-              day.enable = false;
-            }
-            listDays.push(day);
-            
-            if (startDayOfWeek === lastDayOfMonth) {
-    
-            }
-          }
-
-          daysOfWeek.week = 1;
-          daysOfWeek.daysOfWeek = listDays;
-          console.log('days per week', daysOfWeek);
-          calendar.listOfWeeks.push(daysOfWeek);
-          console.log('weeks per month', calendar);
-          if (counterOfDays > this.numberOfDays) {
-            // leave week
-            console.log('break weeks');
-            break;
-          }
-         }
-
+    while (this.counterOfDays <= this.numberOfDays) {
+      this.fillMonth(monthCalendar);
 
     }
+
+    console.log('calendar', this.calendarList);
 
   }
 
@@ -95,5 +48,58 @@ console.log(counterOfDays);
 
   getInitialDay(date: Date): number {
     return date.getUTCDay();
+  }
+
+  fillMonth(monthCalendar: number) {
+    const calendar: ICalendar = <ICalendar>{};
+    calendar.month = monthCalendar;
+    calendar.listOfWeeks = [];
+    const startDayOfWeek = this.getInitialDay(this.startDate);
+    const lastDayOfMonth = new Date(this.startDate.getUTCFullYear(), monthCalendar + 1, 0).getDate();
+    let initialDate = this.startDate.getDate();
+
+    for (let f = 0; f < 6; f++) {
+      const daysOfWeek: ICalendarWeeks = <ICalendarWeeks>{};
+      const listDays: ICalendarDays[] = [];
+      for (let d = 0; d < 7; d++) {        
+        const day: ICalendarDays = <ICalendarDays>{};
+
+        if (d >= startDayOfWeek || f > 0) {
+          // hasValue
+          day.day = initialDate;
+          day.enable = true;
+          this.counterOfDays++;
+          initialDate++;
+        } else {
+          day.day = 0;
+          day.enable = false;
+        }
+        listDays.push(day);
+
+        if (initialDate > lastDayOfMonth) {
+          break;
+        }
+      }
+
+      daysOfWeek.week = f + 1;
+      daysOfWeek.daysOfWeek = listDays;
+      calendar.listOfWeeks.push(daysOfWeek);
+
+      if (initialDate > lastDayOfMonth) {
+        // create new month
+        this.calendarList.push(calendar);
+        this.startDate = new Date(this.startDate.getUTCFullYear(), monthCalendar + 1, 1);
+        const newMonthCalendar = this.getInitialMonth(this.startDate);
+        this.fillMonth(newMonthCalendar);
+        break;
+      }
+
+      if (this.counterOfDays > this.numberOfDays) {
+        // leave week
+        console.log('break weeks');
+        this.calendarList.push(calendar);
+        break;
+      }
+    }
   }
 }
